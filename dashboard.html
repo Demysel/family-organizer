@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tableau de Bord Familial</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Section Calendrier -->
+        <div class="calendar">
+            <h2>Calendrier Partagé</h2>
+            <div id="calendarEvents"></div>
+            <input type="text" id="eventTitle" placeholder="Titre de l'événement">
+            <input type="date" id="eventDate">
+            <button onclick="addEvent()">Ajouter</button>
+        </div>
+
+        <!-- Section Tâches -->
+        <div class="tasks">
+            <h2>Tâches Familiales</h2>
+            <div id="taskList"></div>
+            <input type="text" id="newTask" placeholder="Nouvelle tâche">
+            <button onclick="addTask()">Ajouter</button>
+        </div>
+    </div>
+
+    <script src="scripts/database.js"></script>
+    <script src="scripts/calendar.js"></script>
+    <script src="scripts/tasks.js"></script>
+</body>
+</html>
