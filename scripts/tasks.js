@@ -1,40 +1,68 @@
-// scripts/tasks.js
+let tasks = [];
+
+function initTasks() {
+    window.addTask = addTask;
+    window.toggleTask = toggleTask;
+    window.deleteTask = deleteTask;
+}
+
 async function loadTasks() {
     try {
         const data = await loadData();
-        const taskList = document.getElementById('taskList');
-        
-        if (!taskList) {
-            console.error("Élément 'taskList' introuvable");
-            return;
-        }
-
-        taskList.innerHTML = '';
-        
-        data.tasks.forEach((task, index) => {
-            const taskElement = document.createElement('div');
-            taskElement.className = 'task';
-            taskElement.innerHTML = `
-                <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${index})">
-                <span class="${task.done ? 'completed' : ''}">${task.text}</span>
-                <button class="delete-btn" onclick="deleteTask(${index})">🗑️</button>
-            `;
-            taskList.appendChild(taskElement);
-        });
+        tasks = data.tasks || [];
+        renderTasks();
     } catch (error) {
-        console.error("Erreur de chargement des tâches:", error);
+        console.error('Erreur loadTasks:', error);
+    }
+}
+
+function renderTasks() {
+    const taskList = document.getElementById('taskList');
+    if (!taskList) return;
+
+    taskList.innerHTML = tasks.map((task, index) => `
+        <div class="task ${task.done ? 'completed' : ''}">
+            <input type="checkbox" 
+                   ${task.done ? 'checked' : ''} 
+                   onchange="toggleTask(${index})">
+            <span>${task.text}</span>
+            <button class="delete-btn" onclick="deleteTask(${index})">🗑️</button>
+        </div>
+    `).join('');
+}
+
+async function addTask() {
+    try {
+        const input = document.getElementById('newTask');
+        if (!input.value.trim()) return;
+
+        tasks.push({ text: input.value, done: false });
+        await saveData({ tasks });
+        input.value = '';
+        renderTasks();
+    } catch (error) {
+        console.error('Erreur addTask:', error);
+    }
+}
+
+async function toggleTask(index) {
+    try {
+        tasks[index].done = !tasks[index].done;
+        await saveData({ tasks });
+        renderTasks();
+    } catch (error) {
+        console.error('Erreur toggleTask:', error);
     }
 }
 
 async function deleteTask(index) {
-    const data = await loadData();
-    data.tasks.splice(index, 1);
-    await saveData(data);
-    loadTasks();
+    try {
+        tasks.splice(index, 1);
+        await saveData({ tasks });
+        renderTasks();
+    } catch (error) {
+        console.error('Erreur deleteTask:', error);
+    }
 }
 
-// Exporter les fonctions pour le scope global
-window.loadTasks = loadTasks;
-window.addTask = addTask;
-window.toggleTask = toggleTask;
-window.deleteTask = deleteTask;
+initTasks();
