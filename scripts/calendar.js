@@ -94,3 +94,7 @@ async function addEvent() {
   await saveData(data);
   loadCalendar();
 }
+// Rafraîchissement automatique toutes les 30 secondes
+setInterval(() => {
+  if (document.getElementById('calendar')) loadCalendar();
+}, 30000);
