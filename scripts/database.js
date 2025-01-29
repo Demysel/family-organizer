@@ -1,0 +1,20 @@
+const API_KEY = 'VOTRE_CLE_API_JSONBIN'; // Remplacez par votre clé
+const BIN_ID = 'VOTRE_BIN_ID'; // Remplacez par votre ID de bin
+
+// Charger les données
+async function loadData() {
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+    });
+    const data = await response.json();
+    return data.record; // Retourne les données de la famille
+}
+
+// Sauvegarder les données
+async function saveData(data) {
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: { 'X-Master-Key': API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+}
