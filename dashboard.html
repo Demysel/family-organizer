@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord Familial</title>
+    <title>Family Organizer</title>
     
-    <!-- Styles FullCalendar -->
-    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet' />
-    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet' />
-    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.css' rel='stylesheet' />
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet'>
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet'>
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.css' rel='stylesheet'>
     
-    <!-- Style personnalisé -->
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <div class="dashboard">
-        <!-- Section Calendrier améliorée -->
+    <div id="loading" class="loader"></div>
+    
+    <div class="dashboard hidden">
+        <!-- Section Calendrier -->
         <div class="calendar-section">
             <h2>📅 Calendrier Familial</h2>
-            
             <!-- Contrôles d'ajout d'événement -->
             <div class="event-controls">
                 <input type="text" id="eventTitle" placeholder="Titre de l'événement" class="event-input">
@@ -32,33 +32,33 @@
             <div id="calendar"></div>
         </div>
 
-        <!-- Section Tâches -->
-        <div class="tasks-section">
-            <h2>✅ Tâches Familiales</h2>
-            <div class="task-controls">
-                <input type="text" id="newTask" placeholder="Nouvelle tâche..." class="task-input">
-                <button onclick="addTask()" class="btn-add">📥 Ajouter Tâche</button>
-            </div>
-            <div id="taskList" class="task-list"></div>
-        </div>
-    </div>
-
-    <!-- Bibliothèques FullCalendar -->
+         <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/main.min.js'></script>
-    
-    <!-- Scripts personnalisés -->
+
+    <!-- Scripts applicatifs -->
     <script src="scripts/database.js"></script>
+    <script src="scripts/auth.js"></script>
     <script src="scripts/calendar.js"></script>
     <script src="scripts/tasks.js"></script>
-<script>
-    <!-- Initialisation du calendrier au chargement -->
-     document.addEventListener('DOMContentLoaded', () => {
-        if (typeof loadCalendar === 'function') loadCalendar();
-        if (typeof loadTasks === 'function') loadTasks();
-    });
-</script>
+
+    <!-- Initialisation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await Promise.all([
+                    loadCalendar(),
+                    loadTasks()
+                ]);
+                document.getElementById('loading').classList.add('hidden');
+                document.querySelector('.dashboard').classList.remove('hidden');
+            } catch (error) {
+                console.error('Erreur initialisation:', error);
+                alert('Erreur de chargement, vérifiez la console');
+            }
+        });
+    </script>
 </body>
 </html>
