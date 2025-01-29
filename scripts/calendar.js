@@ -1,10 +1,21 @@
 let currentCalendar = null;
 
 async function loadCalendar() {
-  const data = await loadData();
-  const calendarEl = document.getElementById('calendar');
-  
-  if (currentCalendar) currentCalendar.destroy(); // Détruit l'instance existante
+    try {
+        const data = await loadData();
+        const calendarEl = document.getElementById('calendar');
+        
+        if (!calendarEl) {
+            console.error("Élément 'calendar' introuvable");
+            return;
+        }
+
+        // [Le reste du code existant pour FullCalendar...]
+        
+    } catch (error) {
+        console.error("Erreur de chargement du calendrier:", error);
+    }
+}
 
   currentCalendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth', // Vue par défaut
