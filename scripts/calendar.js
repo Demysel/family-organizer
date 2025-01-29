@@ -1,113 +1,94 @@
-let currentCalendar = null;
+let calendarInstance = null;
+
+function initCalendar() {
+    window.addEvent = addEvent;
+}
 
 async function loadCalendar() {
     try {
         const data = await loadData();
-        const calendarEl = document.getElementById('calendar');
-        
-        if (!calendarEl) {
-            console.error("Élément 'calendar' introuvable");
-            return;
-        }
-
-        // [Le reste du code existant pour FullCalendar...]
-        
+        renderCalendar(data.calendar || []);
     } catch (error) {
-        console.error("Erreur de chargement du calendrier:", error);
+        console.error('Erreur loadCalendar:', error);
     }
 }
 
-  currentCalendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth', // Vue par défaut
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    events: data.calendar.map(event => ({
-      id: event.id,
-      title: event.title,
-      start: event.start,
-      end: event.end,
-      color: event.color
-    })),
-    editable: true,
-    eventClick: (info) => openEditModal(info.event),
-    eventDrop: (info) => updateEvent(info.event),
-    eventResize: (info) => updateEvent(info.event),
-    datesSet: () => document.querySelectorAll('.fc-event').forEach(applyEventColors)
-  });
+function renderCalendar(events) {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
 
-  currentCalendar.render();
+    if (calendarInstance) calendarInstance.destroy();
+
+    calendarInstance = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events.map(event => ({
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            color: event.color
+        })),
+        editable: true,
+        eventClick: handleEventClick,
+        eventDrop: handleEventUpdate,
+        eventResize: handleEventUpdate
+    });
+
+    calendarInstance.render();
 }
 
-// Fonction pour appliquer les couleurs
-function applyEventColors(eventElement) {
-  const event = currentCalendar.getEventById(eventElement.dataset.eventId);
-  eventElement.style.backgroundColor = event.extendedProps.color;
-}
-
-// Modale d'édition
-function openEditModal(event) {
-  const newTitle = prompt('Modifier le titre:', event.title);
-  const newColor = prompt('Couleur (ex: #FF0000):', event.color || '#3A87AD');
-
-  if (newTitle) {
-    event.setProp('title', newTitle);
-    event.setProp('color', newColor);
-    updateEvent(event);
-  }
-  
-  if (confirm('Supprimer cet événement ?')) {
-    event.remove();
-    deleteEvent(event.id);
-  }
-}
-
-async function updateEvent(event) {
-  const data = await loadData();
-  const index = data.calendar.findIndex(e => e.id === event.id);
-  
-  data.calendar[index] = {
-    id: event.id,
-    title: event.title,
-    start: event.startStr,
-    end: event.endStr,
-    color: event.color
-  };
-  
-  await saveData(data);
-}
-
-async function deleteEvent(eventId) {
-  const data = await loadData();
-  data.calendar = data.calendar.filter(e => e.id !== eventId);
-  await saveData(data);
-  loadCalendar();
-}
-
-// Ajout avec couleur
 async function addEvent() {
-  const title = document.getElementById('eventTitle').value;
-  const start = document.getElementById('eventStart').value;
-  const end = document.getElementById('eventEnd').value;
-  const color = document.getElementById('eventColor').value || '#3A87AD';
+    try {
+        const event = {
+            id: Date.now().toString(),
+            title: document.getElementById('eventTitle').value,
+            start: document.getElementById('eventStart').value,
+            end: document.getElementById('eventEnd').value,
+            color: document.getElementById('eventColor').value
+        };
 
-  const data = await loadData();
-  data.calendar.push({
-    id: Date.now().toString(),
-    title,
-    start,
-    end: end || start,
-    color
-  });
-  
-  await saveData(data);
-  loadCalendar();
+        const data = await loadData();
+        data.calendar.push(event);
+        await saveData(data);
+        renderCalendar(data.calendar);
+    } catch (error) {
+        console.error('Erreur addEvent:', error);
+    }
 }
-// Rafraîchissement automatique toutes les 30 secondes
-setInterval(() => {
-  if (document.getElementById('calendar')) loadCalendar();
-}, 30000);
-window.loadCalendar = loadCalendar;
-window.addEvent = addEvent;
+
+async function handleEventUpdate(info) {
+    try {
+        const data = await loadData();
+        const index = data.calendar.findIndex(e => e.id === info.event.id);
+        data.calendar[index] = {
+            ...data.calendar[index],
+            start: info.event.startStr,
+            end: info.event.endStr
+        };
+        await saveData(data);
+    } catch (error) {
+        console.error('Erreur updateEvent:', error);
+    }
+}
+
+async function handleEventClick(info) {
+    try {
+        const newTitle = prompt('Nouveau titre:', info.event.title);
+        if (newTitle) {
+            const data = await loadData();
+            const index = data.calendar.findIndex(e => e.id === info.event.id);
+            data.calendar[index].title = newTitle;
+            await saveData(data);
+            renderCalendar(data.calendar);
+        }
+    } catch (error) {
+        console.error('Erreur handleEventClick:', error);
+    }
+}
+
+initCalendar();
