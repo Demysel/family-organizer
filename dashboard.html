@@ -1,31 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de Bord Familial</title>
+    
+    <!-- Styles FullCalendar -->
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet' />
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet' />
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.css' rel='stylesheet' />
+    
+    <!-- Style personnalisé -->
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <div class="dashboard">
-        <!-- Section Calendrier -->
-        <div class="calendar">
-            <h2>Calendrier Partagé</h2>
-            <div id="calendarEvents"></div>
-            <input type="text" id="eventTitle" placeholder="Titre de l'événement">
-            <input type="date" id="eventDate">
-            <button onclick="addEvent()">Ajouter</button>
+        <!-- Section Calendrier améliorée -->
+        <div class="calendar-section">
+            <h2>📅 Calendrier Familial</h2>
+            
+            <!-- Contrôles d'ajout d'événement -->
+            <div class="event-controls">
+                <input type="text" id="eventTitle" placeholder="Titre de l'événement" class="event-input">
+                <input type="datetime-local" id="eventStart" class="event-input">
+                <input type="datetime-local" id="eventEnd" class="event-input">
+                <input type="color" id="eventColor" value="#4CAF50" title="Choisir une couleur">
+                <button onclick="addEvent()" class="btn-add">➕ Ajouter Événement</button>
+            </div>
+
+            <!-- Conteneur du calendrier -->
+            <div id="calendar"></div>
         </div>
 
         <!-- Section Tâches -->
-        <div class="tasks">
-            <h2>Tâches Familiales</h2>
-            <div id="taskList"></div>
-            <input type="text" id="newTask" placeholder="Nouvelle tâche">
-            <button onclick="addTask()">Ajouter</button>
+        <div class="tasks-section">
+            <h2>✅ Tâches Familiales</h2>
+            <div class="task-controls">
+                <input type="text" id="newTask" placeholder="Nouvelle tâche..." class="task-input">
+                <button onclick="addTask()" class="btn-add">📥 Ajouter Tâche</button>
+            </div>
+            <div id="taskList" class="task-list"></div>
         </div>
     </div>
 
+    <!-- Bibliothèques FullCalendar -->
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/main.min.js'></script>
+    
+    <!-- Scripts personnalisés -->
     <script src="scripts/database.js"></script>
     <script src="scripts/calendar.js"></script>
     <script src="scripts/tasks.js"></script>
+
+    <!-- Initialisation du calendrier au chargement -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCalendar();
+            loadTasks();
+        });
+    </script>
 </body>
 </html>
