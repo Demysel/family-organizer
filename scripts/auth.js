@@ -1,5 +1,5 @@
 // Mot de passe familial hashé (utilisez SHA-256 pour le stocker)
-const FAMILY_PASSWORD_HASH = "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b";
+const FAMILY_PASSWORD_HASH = "$2y$10$YUukGFUy9NTNQ1z12myi/ewPLiGZ3zKuVkmkKfMFoz.MOVD6A6sFm";
 
 async function login() {
     const password = document.getElementById('familyPassword').value;
