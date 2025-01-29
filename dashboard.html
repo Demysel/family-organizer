@@ -53,13 +53,12 @@
     <script src="scripts/database.js"></script>
     <script src="scripts/calendar.js"></script>
     <script src="scripts/tasks.js"></script>
-
+<script>
     <!-- Initialisation du calendrier au chargement -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCalendar();
-            loadTasks();
-        });
-    </script>
+     document.addEventListener('DOMContentLoaded', () => {
+        if (typeof loadCalendar === 'function') loadCalendar();
+        if (typeof loadTasks === 'function') loadTasks();
+    });
+</script>
 </body>
 </html>
