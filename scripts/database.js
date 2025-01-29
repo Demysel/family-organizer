@@ -1,5 +1,5 @@
-const API_KEY = 'VOTRE_CLE_API_JSONBIN'; // Remplacez par votre clé
-const BIN_ID = 'VOTRE_BIN_ID'; // Remplacez par votre ID de bin
+const API_KEY = '$2a$10$j99ZptquF7iTqI/UP0xQMucBLqWZW/8bTlz859GxEqzmmfq0DpR4.'; // Remplacez par votre clé
+const BIN_ID = '679a2a57acd3cb34a8d4e3b3'; // Remplacez par votre ID de bin
 
 // Charger les données
 async function loadData() {
