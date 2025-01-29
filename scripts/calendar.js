@@ -109,3 +109,5 @@ async function addEvent() {
 setInterval(() => {
   if (document.getElementById('calendar')) loadCalendar();
 }, 30000);
+window.loadCalendar = loadCalendar;
+window.addEvent = addEvent;
