@@ -12,6 +12,18 @@ async function loadCalendar() {
         calendarDiv.appendChild(eventElement);
     });
 }
+// scripts/tasks.js
+async function addTask() {
+    const text = document.getElementById('newTask').value;
+    if (!text) return; // Évite les tâches vides
+
+    const data = await loadData();
+    data.tasks.push({ text, done: false });
+    await saveData(data);
+    
+    document.getElementById('newTask').value = ''; // Réinitialise le champ
+    loadTasks(); // Rafraîchit la liste
+}
 
 async function addEvent() {
     const title = document.getElementById('eventTitle').value;
