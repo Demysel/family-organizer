@@ -1,39 +1,40 @@
-async function loadCalendar() {
-    const data = await loadData();
-    const calendarDiv = document.getElementById('calendarEvents');
-    calendarDiv.innerHTML = '';
-
-    data.calendar.forEach(event => {
-        const eventElement = document.createElement('div');
-        eventElement.className = 'event';
-        eventElement.innerHTML = `
-            <strong>${event.date}</strong>: ${event.title}
-        `;
-        calendarDiv.appendChild(eventElement);
-    });
-}
 // scripts/tasks.js
-async function addTask() {
-    const text = document.getElementById('newTask').value;
-    if (!text) return; // Évite les tâches vides
+async function loadTasks() {
+    try {
+        const data = await loadData();
+        const taskList = document.getElementById('taskList');
+        
+        if (!taskList) {
+            console.error("Élément 'taskList' introuvable");
+            return;
+        }
 
-    const data = await loadData();
-    data.tasks.push({ text, done: false });
-    await saveData(data);
-    
-    document.getElementById('newTask').value = ''; // Réinitialise le champ
-    loadTasks(); // Rafraîchit la liste
+        taskList.innerHTML = '';
+        
+        data.tasks.forEach((task, index) => {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task';
+            taskElement.innerHTML = `
+                <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${index})">
+                <span class="${task.done ? 'completed' : ''}">${task.text}</span>
+                <button class="delete-btn" onclick="deleteTask(${index})">🗑️</button>
+            `;
+            taskList.appendChild(taskElement);
+        });
+    } catch (error) {
+        console.error("Erreur de chargement des tâches:", error);
+    }
 }
 
-async function addEvent() {
-    const title = document.getElementById('eventTitle').value;
-    const date = document.getElementById('eventDate').value;
-
+async function deleteTask(index) {
     const data = await loadData();
-    data.calendar.push({ title, date });
+    data.tasks.splice(index, 1);
     await saveData(data);
-    loadCalendar();
+    loadTasks();
 }
 
-// Charger le calendrier au démarrage
-document.addEventListener('DOMContentLoaded', loadCalendar);
+// Exporter les fonctions pour le scope global
+window.loadTasks = loadTasks;
+window.addTask = addTask;
+window.toggleTask = toggleTask;
+window.deleteTask = deleteTask;
