@@ -12,7 +12,16 @@ async function loadCalendar() {
         console.error('Erreur loadCalendar:', error);
     }
 }
-
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialisation différée pour charger les dépendances
+    setTimeout(() => {
+        if (window.FullCalendar) {
+            initCalendar();
+        } else {
+            console.error('FullCalendar non chargé !');
+        }
+    }, 500);
+});
 function renderCalendar(events) {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
