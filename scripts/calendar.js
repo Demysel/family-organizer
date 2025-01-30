@@ -11,33 +11,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderCalendar(events) {
-        const calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return;
+   function renderCalendar(events) {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
 
-        if (calendarInstance) calendarInstance.destroy();
+    if (calendarInstance) calendarInstance.destroy();
 
-        calendarInstance = new FullCalendar.Calendar(calendarEl, {
-            plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: events.map(event => ({
-                title: event.title || 'Sans titre',
-                start: event.start,
-                end: event.end,
-                color: event.color || '#FF5733'
-            })),
-            editable: true,
-            eventClick: handleEventClick,
-            eventChange: handleEventUpdate
-        });
+    const validEvents = events
+        .filter(event => event.start) // Filtre les événements sans date de début
+        .map(event => ({
+            title: event.title || 'Sans titre',
+            start: event.start,
+            end: event.end || null,
+            color: event.color || '#FF5733'
+        }));
 
-        calendarInstance.render();
-    }
+    calendarInstance = new FullCalendar.Calendar(calendarEl, {
+        plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: validEvents,
+        editable: true
+    });
+
+    calendarInstance.render();
+}
 
     window.loadCalendar = loadCalendar;
     loadCalendar();
