@@ -49,23 +49,18 @@
 
     <!-- Initialisation -->
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Chargement simultané du calendrier et des tâches
-                await Promise.all([
-                    initCalendar(),
-                    loadTasks()
-                ]);
-                
-                // Masquer le loader et afficher le dashboard
-                document.getElementById('loading').classList.add('hidden');
-                document.querySelector('.dashboard').classList.remove('hidden');
-                
-            } catch (error) {
-                console.error('Erreur initialisation:', error);
-                alert('Erreur de chargement - Vérifiez la console (F12)');
-            }
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // Charger le calendrier d'abord
+            await initCalendar(); // <-- Changé de loadCalendar()
+            await loadTasks();
+            
+            document.getElementById('loading').classList.add('hidden');
+            document.querySelector('.dashboard').classList.remove('hidden');
+        } catch (error) {
+            console.error('Erreur initialisation:', error);
+        }
+    });
+</script>
 </body>
 </html>
