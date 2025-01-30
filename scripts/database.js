@@ -1,7 +1,7 @@
 // scripts/database.js
 const API_KEY = '$2a$10$j99ZptquF7iTqI/UP0xQMucBLqWZW/8bTlz859GxEqzmmfq0DpR4.'; // À remplacer par votre clé
 const BIN_ID = '679ad82aacd3cb34a8d52eb5'; // À remplacer par votre ID de bin
-const API_BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const API_BASE = `https://api.jsonbin.io/v3/b/679ad82aacd3cb34a8d52eb5`;
 
 async function loadData() {
     try {
@@ -27,14 +27,13 @@ async function loadData() {
 
 async function saveData(data) {
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_URL, { // Utiliser API_URL ici
             method: 'PUT',
             headers: { 
                 'X-Master-Key': API_KEY,
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ ...cache, ...data })
+            body: JSON.stringify(data)
         });
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
