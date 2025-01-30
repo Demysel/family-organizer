@@ -40,7 +40,6 @@
         </div>
     </div>
 
- 
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
     <!-- Scripts applicatifs -->
     <script src="scripts/database.js"></script>
@@ -54,7 +53,7 @@
             try {
                 // Chargement simultané du calendrier et des tâches
                 await Promise.all([
-                    loadCalendar(),
+                    initCalendar(),
                     loadTasks()
                 ]);
                 
