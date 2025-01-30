@@ -21,9 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('FullCalendar non chargé !');
         }
     }, 500);
-     plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin]
-    }).render();
 });
+
 function renderCalendar(events) {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -44,6 +43,7 @@ function renderCalendar(events) {
             end: event.end,
             color: event.color
         })),
+        plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
         editable: true,
         eventClick: handleEventClick,
         eventDrop: handleEventUpdate,
