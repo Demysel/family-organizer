@@ -1,112 +1,101 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Utilisation directe de l'objet global FullCalendar
-    const { Calendar, dayGridPlugin, timeGridPlugin, interactionPlugin } = FullCalendar;
-    
-    let calendarInstance = null;
+    let calendar = null;
+    const CALENDAR_ID = 'family-calendar';
 
-    async function loadCalendar() {
+    // Initialisation
+    async function initCalendar() {
         try {
             const data = await loadData();
-            renderCalendar(data?.calendar || []);
+            setupCalendar(data.calendar || []);
+            setupEventHandlers();
         } catch (error) {
-            console.error('Erreur loadCalendar:', error);
+            console.error('Erreur initialisation calendrier:', error);
         }
     }
 
-    function renderCalendar(events) {
-        const calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return;
+    // Configuration du calendrier
+    function setupCalendar(events) {
+        const container = document.getElementById('calendar');
+        if (!container) return;
 
-        if (calendarInstance) calendarInstance.destroy();
-
-        calendarInstance = new Calendar(calendarEl, {
-            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin], // Plugins corrects
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: events.map(event => ({
-                title: event.title,
-                start: event.start,
-                end: event.end,
-                color: event.color
-            })),
-            editable: true
+        calendar = new tui.Calendar(container, {
+            defaultView: 'month',
+            useFormPopup: false,
+            calendars: [{
+                id: CALENDAR_ID,
+                name: 'Famille',
+                color: '#fff',
+                bgColor: '#4CAF50'
+            }]
         });
 
-        calendarInstance.render();
+        const convertedEvents = events.map(event => ({
+            id: event.id,
+            calendarId: CALENDAR_ID,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            color: event.color,
+            category: 'time'
+        }));
+
+        calendar.createEvents(convertedEvents);
     }
 
-
-    window.loadCalendar = loadCalendar;
-    loadCalendar();
-
-    async function addEvent() {
-        try {
+    // Gestion des événements
+    function setupEventHandlers() {
+        // Ajout d'événement via formulaire
+        window.addEvent = async () => {
             const title = document.getElementById('eventTitle').value.trim();
-            const start = document.getElementById('eventStart').value.trim();
-            const end = document.getElementById('eventEnd').value.trim();
-            const color = document.getElementById('eventColor').value.trim();
+            const start = document.getElementById('eventStart').value;
+            const end = document.getElementById('eventEnd').value;
+            const color = document.getElementById('eventColor').value;
 
             if (!title || !start) {
-                alert('Le titre et la date de début sont obligatoires.');
+                alert('Titre et date de début requis !');
                 return;
             }
 
-            const event = {
+            const newEvent = {
                 id: Date.now().toString(),
+                calendarId: CALENDAR_ID,
                 title,
-                start,
-                end: end || null,
-                color: color || '#3788d8'
+                start: new Date(start),
+                end: end ? new Date(end) : null,
+                color,
+                category: 'time'
             };
 
-            const data = await loadData();
-            data.calendar = data.calendar || [];
-            data.calendar.push(event);
-            await saveData(data);
-            renderCalendar(data.calendar);
-        } catch (error) {
-            console.error('Erreur addEvent:', error);
-        }
+            calendar.createEvents([newEvent]);
+            await saveCalendarData();
+        };
+
+        // Mise à jour des événements
+        calendar.on('beforeUpdateEvent', async ({ event, changes }) => {
+            Object.assign(event, changes);
+            await saveCalendarData();
+        });
+
+        // Suppression d'événement
+        calendar.on('beforeDeleteEvent', async event => {
+            calendar.deleteEvent(event.id, event.calendarId);
+            await saveCalendarData();
+        });
     }
 
-    async function handleEventUpdate(info) {
-        try {
-            const data = await loadData();
-            const index = data.calendar.findIndex(e => e.id === info.event.id);
-            if (index !== -1) {
-                data.calendar[index] = {
-                    ...data.calendar[index],
-                    start: info.event.startStr,
-                    end: info.event.endStr
-                };
-                await saveData(data);
-            }
-        } catch (error) {
-            console.error('Erreur updateEvent:', error);
-        }
+    // Sauvegarde des données
+    async function saveCalendarData() {
+        const events = calendar.getEvents().map(event => ({
+            id: event.id,
+            title: event.title,
+            start: event.start.toISOString(),
+            end: event.end?.toISOString() || null,
+            color: event.color
+        }));
+
+        await saveData({ calendar: events });
     }
 
-    async function handleEventClick(info) {
-        try {
-            const newTitle = prompt('Nouveau titre:', info.event.title);
-            if (newTitle) {
-                const data = await loadData();
-                const index = data.calendar.findIndex(e => e.id === info.event.id);
-                if (index !== -1) {
-                    data.calendar[index].title = newTitle;
-                    await saveData(data);
-                    renderCalendar(data.calendar);
-                }
-            }
-        } catch (error) {
-            console.error('Erreur handleEventClick:', error);
-        }
-    }
-
-    // Rendre `addEvent` accessible globalement
-    window.addEvent = addEvent;
+    // Démarrage
+    initCalendar();
 });
