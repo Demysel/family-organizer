@@ -9,57 +9,69 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     async function loadCalendar() {
-        try {
-            const data = await loadData();
-            renderCalendar(data.calendar || []);
-        } catch (error) {
-            console.error('Erreur loadCalendar:', error);
-        }
+    try {
+        const data = await loadData();
+        console.log('Données chargées:', data);
+        renderCalendar(data?.calendar || []);
+    } catch (error) {
+        console.error('Erreur loadCalendar:', error);
     }
+}
 
-    function renderCalendar(events) {
-        const calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return;
+function renderCalendar(events) {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
 
-        if (calendarInstance) calendarInstance.destroy();
+    if (calendarInstance) calendarInstance.destroy();
 
-        calendarInstance = new FullCalendar.Calendar(calendarEl, {
-            plugins: plugins,
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: events.map(event => ({
+    calendarInstance = new FullCalendar.Calendar(calendarEl, {
+        plugins: plugins,
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events
+            .filter(event => event && event.title && event.start) // Vérification des champs essentiels
+            .map(event => ({
                 title: event.title,
                 start: event.start,
                 end: event.end,
-                color: event.color
+                color: event.color || '#3788d8' // Couleur par défaut
             })),
-            editable: true,
-            eventClick: (info) => {
-                const newTitle = prompt('Nouveau titre:', info.event.title);
-                if (newTitle) info.event.setProp('title', newTitle);
-            }
-        });
+        editable: true,
+        eventClick: handleEventClick
+    });
 
-        calendarInstance.render();
-    }
+    calendarInstance.render();
+}
+
    window.loadCalendar = loadCalendar;
     loadCalendar();
 });
 async function addEvent() {
     try {
+        const title = document.getElementById('eventTitle').value.trim();
+        const start = document.getElementById('eventStart').value.trim();
+        const end = document.getElementById('eventEnd').value.trim();
+        const color = document.getElementById('eventColor').value.trim();
+
+        if (!title || !start) {
+            alert('Le titre et la date de début sont obligatoires.');
+            return;
+        }
+
         const event = {
             id: Date.now().toString(),
-            title: document.getElementById('eventTitle').value,
-            start: document.getElementById('eventStart').value,
-            end: document.getElementById('eventEnd').value,
-            color: document.getElementById('eventColor').value
+            title,
+            start,
+            end: end || null,
+            color: color || '#3788d8'
         };
 
         const data = await loadData();
+        data.calendar = data.calendar || [];
         data.calendar.push(event);
         await saveData(data);
         renderCalendar(data.calendar);
