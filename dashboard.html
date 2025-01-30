@@ -7,11 +7,13 @@
     
     <!-- FullCalendar CSS -->
     <!-- Avant la fermeture du </body> -->
+<!-- Avant les scripts personnalisés -->
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js'></script>
-<script src="scripts/calendar.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js'></script>
+
+<script src="scripts/calendar.js"></script> <!-- Doit être APRÈS FullCalendar -->
 </head>
 <body>
     <div id="loading" class="loader"></div>
