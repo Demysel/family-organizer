@@ -96,6 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
         await saveData({ calendar: events });
     }
 
-    // Démarrage
-    initCalendar();
-});
+   window.initCalendar = async () => {
+    try {
+        const data = await loadData();
+        setupCalendar(data.calendar || []);
+        setupEventHandlers();
+    } catch (error) {
+        console.error('Erreur initCalendar:', error);
+    }
+};
