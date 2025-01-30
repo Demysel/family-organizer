@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const { Calendar, dayGridPlugin, timeGridPlugin, interactionPlugin } = FullCalendar;
+    
     let calendarInstance = null;
-
+    const plugins = [dayGridPlugin, timeGridPlugin, interactionPlugin];
+    
     async function loadCalendar() {
         try {
             const data = await loadData();
