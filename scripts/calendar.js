@@ -1,48 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Utilisation directe de l'objet global FullCalendar
     const { Calendar, dayGridPlugin, timeGridPlugin, interactionPlugin } = FullCalendar;
     
     let calendarInstance = null;
-    const plugins = [dayGridPlugin, timeGridPlugin, interactionPlugin];
-    
+
     async function loadCalendar() {
         try {
             const data = await loadData();
-            console.log('Données chargées:', data);
             renderCalendar(data?.calendar || []);
         } catch (error) {
             console.error('Erreur loadCalendar:', error);
         }
     }
 
-   function renderCalendar(events) {
-    const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return;
+    function renderCalendar(events) {
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return;
 
-    if (calendarInstance) calendarInstance.destroy();
+        if (calendarInstance) calendarInstance.destroy();
 
-    const validEvents = events
-        .filter(event => event.start) // Filtre les événements sans date de début
-        .map(event => ({
-            title: event.title || 'Sans titre',
-            start: event.start,
-            end: event.end || null,
-            color: event.color || '#FF5733'
-        }));
+        calendarInstance = new Calendar(calendarEl, {
+            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin], // Plugins corrects
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: events.map(event => ({
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                color: event.color
+            })),
+            editable: true
+        });
 
-    calendarInstance = new FullCalendar.Calendar(calendarEl, {
-        plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: validEvents,
-        editable: true
-    });
+        calendarInstance.render();
+    }
 
-    calendarInstance.render();
-}
 
     window.loadCalendar = loadCalendar;
     loadCalendar();
