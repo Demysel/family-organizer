@@ -91,3 +91,5 @@ async function handleEventClick(info) {
 }
 
 initCalendar();
+window.loadCalendar = loadCalendar;
+});
