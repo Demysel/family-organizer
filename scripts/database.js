@@ -1,33 +1,27 @@
-const API_KEY = '$2a$10$j99ZptquF7iTqI/UP0xQMucBLqWZW/8bTlz859GxEqzmmfq0DpR4.'; // Remplacez par votre clé
-const BIN_ID = '679a37b5e41b4d34e480b1be//';
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-let cache = {
-    calendar: [],
-    tasks: [],
-    photos: [],
-    location: {}
-};
+// scripts/database.js
+const API_KEY = '$2a$10$j99ZptquF7iTqI/UP0xQMucBLqWZW/8bTlz859GxEqzmmfq0DpR4.'; // À remplacer par votre clé
+const BIN_ID = '679ad82aacd3cb34a8d52eb5'; // À remplacer par votre ID de bin
+const API_BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 async function loadData() {
     try {
-        const response = await fetch(`${API_URL}/latest`, {
+        const response = await fetch(`${API_BASE}/latest`, {
             headers: { 
                 'X-Master-Key': API_KEY,
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Content-Type': 'application/json'
             }
         });
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+        }
         
         const { record } = await response.json();
-        cache = { ...cache, ...record };
-        return cache;
+        return record;
         
     } catch (error) {
         console.error('Erreur loadData:', error);
-        return cache; // Retour cache offline
+        return { calendar: [], tasks: [] }; // Retourne des données vides en cas d'erreur
     }
 }
 
