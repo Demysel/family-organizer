@@ -1,42 +1,46 @@
 // scripts/database.js
 const API_KEY = '$2a$10$j99ZptquF7iTqI/UP0xQMucBLqWZW/8bTlz859GxEqzmmfq0DpR4.'; // À remplacer par votre clé
 const BIN_ID = '679ad82aacd3cb34a8d52eb5'; // À remplacer par votre ID de bin
-//const API_BASE = `https://api.jsonbin.io/v3/b/679ad82aacd3cb34a8d52eb5`;
+const API_BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // Charger les données
 async function loadData() {
-    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { 'X-Master-Key': API_KEY }
-    });
-    const data = await response.json();
-    return data.record; // Retourne les données de la famille
-}
-        
+    try {
+        const response = await fetch(`${API_BASE}/latest`, {
+            headers: { 
+                'X-Master-Key': API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+
         if (!response.ok) {
             throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         }
-        
+
         const { record } = await response.json();
-        return record;
-        
+        return record; // Retourne les données de la famille
+
     } catch (error) {
         console.error('Erreur loadData:', error);
         return { calendar: [], tasks: [] }; // Retourne des données vides en cas d'erreur
     }
 }
 
+// Sauvegarder les données
 async function saveData(data) {
-    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-        method: 'PUT',
-        headers: { 'X-Master-Key': API_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-}
-        
+    try {
+        const response = await fetch(API_BASE, {
+            method: 'PUT',
+            headers: { 
+                'X-Master-Key': API_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
         return await response.json();
-        
+
     } catch (error) {
         console.error('Erreur saveData:', error);
         throw error;
