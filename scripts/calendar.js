@@ -1,4 +1,5 @@
-let calendarInstance = null;
+// Activation du mode global
+const { Calendar, interactionPlugin, dayGridPlugin, timeGridPlugin } = FullCalendar;let calendarInstance = null;
 
 function initCalendar() {
     window.addEvent = addEvent;
@@ -43,6 +44,7 @@ function renderCalendar(events) {
             end: event.end,
             color: event.color
         })),
+        new Calendar(calendarEl, {
         plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
         editable: true,
         eventClick: handleEventClick,
@@ -93,7 +95,7 @@ async function handleEventClick(info) {
         if (newTitle) {
             const data = await loadData();
             const index = data.calendar.findIndex(e => e.id === info.event.id);
-            data.calendar[index].title = newTitle;
+            data.calendar[index].title = Title;
             await saveData(data);
             renderCalendar(data.calendar);
         }
