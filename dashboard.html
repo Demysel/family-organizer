@@ -1,33 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Dans le <head> de dashboard.html -->
-<link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Favicon vide -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Organizer</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Favicon vide -->
     
-   <!-- Dans dashboard.html -->
-<head>
-    <!-- Styles d'abord -->
+    <!-- Styles FullCalendar -->
     <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet'>
     <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet'>
     <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.css' rel='stylesheet'>
+    
+    <!-- Style personnalisé -->
+    <link rel="stylesheet" href="styles/style.css">
 </head>
-<body>
-    <!-- Contenu HTML -->
 
-    <!-- Scripts FullCalendar en premier -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js'></script>
-
-    <!-- Vos scripts ensuite -->
-    <script src="scripts/database.js"></script>
-    <script src="scripts/calendar.js"></script>
-</body>
-</head>
 <body>
     <div id="loading" class="loader"></div>
     
@@ -35,7 +22,6 @@
         <!-- Section Calendrier -->
         <div class="calendar-section">
             <h2>📅 Calendrier Familial</h2>
-            <!-- Contrôles d'ajout d'événement -->
             <div class="event-controls">
                 <input type="text" id="eventTitle" placeholder="Titre de l'événement" class="event-input">
                 <input type="datetime-local" id="eventStart" class="event-input">
@@ -43,16 +29,25 @@
                 <input type="color" id="eventColor" value="#4CAF50" title="Choisir une couleur">
                 <button onclick="addEvent()" class="btn-add">➕ Ajouter Événement</button>
             </div>
-
-            <!-- Conteneur du calendrier -->
             <div id="calendar"></div>
         </div>
 
-         <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/main.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/main.min.js'></script>
+        <!-- Section Tâches -->
+        <div class="tasks-section">
+            <h2>✅ Tâches Familiales</h2>
+            <div class="task-controls">
+                <input type="text" id="newTask" placeholder="Nouvelle tâche..." class="task-input">
+                <button onclick="addTask()" class="btn-add">📥 Ajouter Tâche</button>
+            </div>
+            <div id="taskList" class="task-list"></div>
+        </div>
+    </div>
+
+    <!-- Scripts FullCalendar -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js'></script>
 
     <!-- Scripts applicatifs -->
     <script src="scripts/database.js"></script>
@@ -64,15 +59,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // Chargement simultané du calendrier et des tâches
                 await Promise.all([
                     loadCalendar(),
                     loadTasks()
                 ]);
+                
+                // Masquer le loader et afficher le dashboard
                 document.getElementById('loading').classList.add('hidden');
                 document.querySelector('.dashboard').classList.remove('hidden');
+                
             } catch (error) {
                 console.error('Erreur initialisation:', error);
-                alert('Erreur de chargement, vérifiez la console');
+                alert('Erreur de chargement - Vérifiez la console (F12)');
             }
         });
     </script>
