@@ -1,6 +1,12 @@
-// scripts/calendar.js
 document.addEventListener('DOMContentLoaded', () => {
     let calendarInstance = null;
+
+    // Configurer les plugins correctement
+    const plugins = [
+        FullCalendar.dayGridPlugin,
+        FullCalendar.timeGridPlugin,
+        FullCalendar.interactionPlugin
+    ];
 
     async function loadCalendar() {
         try {
@@ -18,27 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (calendarInstance) calendarInstance.destroy();
 
         calendarInstance = new FullCalendar.Calendar(calendarEl, {
-            plugins: [
-                FullCalendar.dayGridPlugin,
-                FullCalendar.timeGridPlugin,
-                FullCalendar.interactionPlugin
-            ],
+            plugins: plugins,
             initialView: 'dayGridMonth',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            events: events,
+            events: events.map(event => ({
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                color: event.color
+            })),
             editable: true,
-            eventClick: handleEventClick,
-            eventDrop: handleEventUpdate,
-            eventResize: handleEventUpdate
+            eventClick: (info) => {
+                const newTitle = prompt('Nouveau titre:', info.event.title);
+                if (newTitle) info.event.setProp('title', newTitle);
+            }
         });
 
         calendarInstance.render();
     }
-
+   window.loadCalendar = loadCalendar;
+    loadCalendar();
+});
 async function addEvent() {
     try {
         const event = {
@@ -87,9 +97,3 @@ async function handleEventClick(info) {
         console.error('Erreur handleEventClick:', error);
     }
 }
-  // Exposer la fonction globalement
-    window.loadCalendar = loadCalendar;
-    
-    // Initialiser automatiquement
-    loadCalendar();
-});
