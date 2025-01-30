@@ -1,45 +1,43 @@
+// scripts/calendar.js
 document.addEventListener('DOMContentLoaded', () => {
-  const { Calendar, defineGlobal } = FullCalendar;
-  defineGlobal(FullCalendar);
+    let calendarInstance = null;
 
-  let calendarInstance = null;
-
-  async function loadCalendar() {
-    try {
-      const data = await loadData();
-      renderCalendar(data.calendar || []);
-    } catch (error) {
-      console.error('Erreur loadCalendar:', error);
+    async function loadCalendar() {
+        try {
+            const data = await loadData();
+            renderCalendar(data.calendar || []);
+        } catch (error) {
+            console.error('Erreur loadCalendar:', error);
+        }
     }
-  }
 
-  function renderCalendar(events) {
-    const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return;
+    function renderCalendar(events) {
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return;
 
-    if (calendarInstance) calendarInstance.destroy();
+        if (calendarInstance) calendarInstance.destroy();
 
-    calendarInstance = new Calendar(calendarEl, {
-      plugins: [
-        FullCalendar.dayGridPlugin,
-        FullCalendar.timeGridPlugin,
-        FullCalendar.interactionPlugin
-      ],
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-      },
-      events: events,
-      editable: true,
-      eventClick: handleEventClick,
-      eventDrop: handleEventUpdate,
-      eventResize: handleEventUpdate
-    });
+        calendarInstance = new FullCalendar.Calendar(calendarEl, {
+            plugins: [
+                FullCalendar.dayGridPlugin,
+                FullCalendar.timeGridPlugin,
+                FullCalendar.interactionPlugin
+            ],
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: events,
+            editable: true,
+            eventClick: handleEventClick,
+            eventDrop: handleEventUpdate,
+            eventResize: handleEventUpdate
+        });
 
-    calendarInstance.render();
-  }
+        calendarInstance.render();
+    }
 
 async function addEvent() {
     try {
@@ -89,7 +87,9 @@ async function handleEventClick(info) {
         console.error('Erreur handleEventClick:', error);
     }
 }
-
-initCalendar();
-window.loadCalendar = loadCalendar;
+  // Exposer la fonction globalement
+    window.loadCalendar = loadCalendar;
+    
+    // Initialiser automatiquement
+    loadCalendar();
 });
