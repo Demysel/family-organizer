@@ -89,7 +89,7 @@ async function handleEventClick(info) {
         if (newTitle) {
             const data = await loadData();
             const index = data.calendar.findIndex(e => e.id === info.event.id);
-            data.calendar[index].title = Title;
+            data.calendar[index].title = newTitle;
             await saveData(data);
             renderCalendar(data.calendar);
         }
