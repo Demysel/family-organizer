@@ -1,58 +1,43 @@
-// Activation du mode global
-const { Calendar, interactionPlugin, dayGridPlugin, timeGridPlugin } = FullCalendar;let calendarInstance = null;
+// scripts/calendar.js
+const { Calendar, interactionPlugin, dayGridPlugin, timeGridPlugin } = FullCalendar;
+
+let calendarInstance = null;
 
 function initCalendar() {
-    window.addEvent = addEvent;
+  window.addEvent = addEvent;
 }
 
 async function loadCalendar() {
-    try {
-        const data = await loadData();
-        renderCalendar(data.calendar || []);
-    } catch (error) {
-        console.error('Erreur loadCalendar:', error);
-    }
+  try {
+    const data = await loadData();
+    renderCalendar(data.calendar || []);
+  } catch (error) {
+    console.error('Erreur loadCalendar:', error);
+  }
 }
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialisation différée pour charger les dépendances
-    setTimeout(() => {
-        if (window.FullCalendar) {
-            initCalendar();
-        } else {
-            console.error('FullCalendar non chargé !');
-        }
-    }, 500);
-});
 
 function renderCalendar(events) {
-    const calendarEl = document.getElementById('calendar');
-    if (!calendarEl) return;
+  const calendarEl = document.getElementById('calendar');
+  if (!calendarEl) return;
 
-    if (calendarInstance) calendarInstance.destroy();
+  if (calendarInstance) calendarInstance.destroy();
 
-    calendarInstance = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: events.map(event => ({
-            id: event.id,
-            title: event.title,
-            start: event.start,
-            end: event.end,
-            color: event.color
-        })),
-        new Calendar(calendarEl, {
-        plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
-        editable: true,
-        eventClick: handleEventClick,
-        eventDrop: handleEventUpdate,
-        eventResize: handleEventUpdate
-    });
+  calendarInstance = new Calendar(calendarEl, {
+    plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin],
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: events,
+    editable: true,
+    eventClick: handleEventClick,
+    eventDrop: handleEventUpdate,
+    eventResize: handleEventUpdate
+  });
 
-    calendarInstance.render();
+  calendarInstance.render();
 }
 
 async function addEvent() {
