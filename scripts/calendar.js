@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let calendarInstance = null;
 
     // Configurer les plugins correctement
-    const plugins = [
-        FullCalendar.dayGridPlugin,
-        FullCalendar.timeGridPlugin,
-        FullCalendar.interactionPlugin
-    ];
+   const calendarInstance = new FullCalendar.Calendar(calendarEl, {
+    plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
+    initialView: 'dayGridMonth',
+    events: events,
+});
 
     async function loadCalendar() {
     try {
@@ -25,23 +25,20 @@ function renderCalendar(events) {
     if (calendarInstance) calendarInstance.destroy();
 
     calendarInstance = new FullCalendar.Calendar(calendarEl, {
-        plugins: plugins,
+        plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin],
         initialView: 'dayGridMonth',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: events
-            .filter(event => event && event.title && event.start) // Vérification des champs essentiels
-            .map(event => ({
-                title: event.title,
-                start: event.start,
-                end: event.end,
-                color: event.color || '#3788d8' // Couleur par défaut
-            })),
+        events: events.map(event => ({
+            title: event.title || 'Sans titre',
+            start: event.start,
+            end: event.end,
+            color: event.color || '#FF5733'
+        })),
         editable: true,
-        eventClick: handleEventClick
     });
 
     calendarInstance.render();
