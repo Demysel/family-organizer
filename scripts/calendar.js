@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
      plugins: [FullCalendar.dayGridPlugin, FullCalendar.timeGridPlugin, FullCalendar.interactionPlugin]
     }).render();
-}
 });
 function renderCalendar(events) {
     const calendarEl = document.getElementById('calendar');
